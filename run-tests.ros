@@ -1,0 +1,30 @@
+#!/bin/sh
+#|-*- mode:lisp -*-|#
+#|
+exec ros -Q -b -- $0 "$@"
+|#
+(progn ;;init forms
+  (ros:ensure-asdf)
+  #+quicklisp(ql:quickload '() :silent t)
+  )
+
+(defpackage :ros.script.run-tests.3910486978
+  (:use :cl))
+(in-package :ros.script.run-tests.3910486978)
+
+(push "." ql:*local-project-directories*)
+
+(ql:quickload "aoc2023")
+(ql:quickload "fiveam")
+
+(defun main (&rest argv)
+  (declare (ignorable argv))
+
+  (asdf:test-system :aoc2023))
+  
+  ;; (if (fiveam:run! 'aoc2023/test)
+  ;;     (sb-ext:exit :code 0)
+  ;;     (sb-ext:exit :code 1)))
+      ;; (ccl:quit 0)
+      ;; (ccl:quit 1)))
+;;; vim: set ft=lisp lisp:
