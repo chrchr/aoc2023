@@ -1,7 +1,8 @@
 (defpackage aoc2023/test
   (:use :cl
    :fiveam)
-  (:import-from :aoc2023 #:calibration-value #:evaluate-calibration-document))
+  (:import-from :aoc2023 #:calibration-value
+                #:evaluate-calibration-document))
 
 (in-package aoc2023/test)
 

@@ -23,21 +23,59 @@
 
 ;; Consider your entire calibration document. What is the sum of all of the calibration values?
 
+;; --- Part Two ---
+
+;; Your calculation isn't quite right. It looks like some of the digits are actually spelled out with letters: one, two, three, four, five, six, seven, eight, and nine also count as valid "digits".
+
+;; Equipped with this new information, you now need to find the real first and last digit on each line. For example:
+
+;; two1nine
+;; eightwothree
+;; abcone2threexyz
+;; xtwone3four
+;; 4nineeightseven2
+;; zoneight234
+;; 7pqrstsixteen
+
+;; In this example, the calibration values are 29, 83, 13, 24, 42, 14, and 76. Adding these together produces 281.
+
+;; What is the sum of all of the calibration values?
 
 (in-package #:aoc2023)
 
+(defun calibration-value-for-digits (digits)
+  (if (zerop (length digits))
+      0
+      (+ (* 10 (elt digits 0))
+         (elt digits (1- (length digits))))))
 
 (defun calibration-value (line)
-  (let ((digits (loop for char across line
-                      for digit = (digit-char-p char)
-                      when digit
-                      collect digit)))
-    (if (zerop (length digits))
-        0
-        (+ (* 10 (elt digits 0))
-           (elt digits (1- (length digits)))))))
+  (calibration-value-for-digits (digits-spelled-out line)))
+
+(defparameter +number-words+ '(("one" 1)
+                               ("two" 2)
+                               ("three" 3)
+                               ("four" 4)
+                               ("five" 5)
+                               ("six" 6)
+                               ("seven" 7)
+                               ("eight" 8)
+                               ("nine" 9)))
+
+(defun number-word-value (str)
+  "Given a string, return the value of any number words at its beginning."
+  (loop for (word word-value) in +number-words+
+        when (and
+              (>= (length str)  (length word))
+              (string= (subseq str 0 (length word)) word))
+        return word-value))
+
+(defun digits-spelled-out (line)
+  (loop for i from 0 upto (1- (length line))
+        for digit = (or (digit-char-p (char line i))
+                        (number-word-value (subseq line i)))
+        when digit collect digit))
 
 (defun evaluate-calibration-document (path)
   (loop for line in (uiop:read-file-lines path)
         sum (calibration-value line)))
-    

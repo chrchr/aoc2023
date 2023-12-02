@@ -1,2 +1,3 @@
 (defpackage aoc2023
-  (:use :cl))
+  (:use :cl)
+  (:export #:evaluate-calibration-document))

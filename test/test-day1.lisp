@@ -8,7 +8,19 @@
 (test calibration-value-no-digits
   (is (= (calibration-value "hello there are no digits today") 0)))
 
+(test calibration-value-spelled-out
+  (is (= (calibration-value "two1nine") 29)))
+
+(test calibration-value-spelled-out-zero
+  (is (= (calibration-value "two1ninezero") 29)))
+
+
 (test evaluate-calibration-document
-      (is
-       (= (evaluate-calibration-document "test-calibration-document.txt")
-          142)))
+  (is
+   (= (evaluate-calibration-document "test-calibration-document.txt")
+      142)))
+
+(test evaluate-spelled-out-calibration-document
+  (is
+   (= (evaluate-calibration-document "day1-spelled-out-calibration-document.txt")
+      281)))
