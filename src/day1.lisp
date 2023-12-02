@@ -46,8 +46,8 @@
 (defun calibration-value-for-digits (digits)
   (if (equalp digits '(nil nil))
       0
-      (+ (* 10 (elt digits 0))
-         (elt digits (1- (length digits))))))
+      (+ (* 10 (car digits))
+         (cadr digits))))
 
 (defun calibration-value (line)
   (calibration-value-for-digits (digits-spelled-out line)))
@@ -62,12 +62,19 @@
                                ("eight" 8)
                                ("nine" 9)))
 
+(defun starts-with (haystack needle)
+  (let ((needle-length (length needle)))
+    (if (<= needle-length (length haystack))
+        (loop for i from 0 upto (1- needle-length)
+              when (not (eq (char haystack i) (char needle i)))
+                return nil
+              finally (return t))
+        nil)))
+
 (defun number-word-value (str)
   "Given a string, return the value of any number words at its beginning."
   (loop for (word word-value) in +number-words+
-        when (and
-              (>= (length str)  (length word))
-              (string= (subseq str 0 (length word)) word))
+        when (starts-with str word)
         return word-value))
 
 (defun digit-spelled-out-p (str offset)
