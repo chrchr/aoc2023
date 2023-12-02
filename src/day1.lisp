@@ -62,27 +62,28 @@
                                ("eight" 8)
                                ("nine" 9)))
 
-(defun starts-with (haystack needle)
+(defun starts-with (haystack haystack-offset needle)
   (declare (type simple-string haystack)
-           (type simple-string needle))
+           (type simple-string needle)
+           (type fixnum haystack-offset))
 
   (let ((needle-length (length needle)))
-    (if (<= needle-length (length haystack))
+    (if (<= needle-length (- (length haystack) haystack-offset))
         (loop for i from 0 upto (1- needle-length)
-              when (not (eq (char haystack i) (char needle i)))
+              when (not (eq (char haystack (+ i haystack-offset)) (char needle i)))
                 return nil
               finally (return t))
         nil)))
 
-(defun number-word-value (str)
+(defun number-word-value (str offset)
   "Given a string, return the value of any number words at its beginning."
   (loop for (word word-value) in +number-words+
-        when (starts-with str word)
+        when (starts-with str offset word)
         return word-value))
 
 (defun digit-spelled-out-p (str offset)
   (or (digit-char-p (char str offset))
-                         (number-word-value (subseq str offset))))
+                         (number-word-value str offset)))
 
 (defun digits-spelled-out (line)
   (list
