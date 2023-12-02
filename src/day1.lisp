@@ -44,7 +44,7 @@
 (in-package #:aoc2023)
 
 (defun calibration-value-for-digits (digits)
-  (if (zerop (length digits))
+  (if (equalp digits '(nil nil))
       0
       (+ (* 10 (elt digits 0))
          (elt digits (1- (length digits))))))
@@ -70,11 +70,18 @@
               (string= (subseq str 0 (length word)) word))
         return word-value))
 
+(defun digit-spelled-out-p (str offset)
+  (or (digit-char-p (char str offset))
+                         (number-word-value (subseq str offset))))
+
 (defun digits-spelled-out (line)
-  (loop for i from 0 upto (1- (length line))
-        for digit = (or (digit-char-p (char line i))
-                        (number-word-value (subseq line i)))
-        when digit collect digit))
+  (list
+   (loop for i from 0 upto (1- (length line))
+         for digit = (digit-spelled-out-p line i)
+         when digit return digit)
+   (loop for i from  (1- (length line)) downto 0
+         for digit = (digit-spelled-out-p line i)
+         when digit return digit)))
 
 (defun evaluate-calibration-document (path)
   (loop for line in (uiop:read-file-lines path)
