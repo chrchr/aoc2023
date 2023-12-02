@@ -63,6 +63,9 @@
                                ("nine" 9)))
 
 (defun starts-with (haystack needle)
+  (declare (type simple-string haystack)
+           (type simple-string needle))
+
   (let ((needle-length (length needle)))
     (if (<= needle-length (length haystack))
         (loop for i from 0 upto (1- needle-length)
