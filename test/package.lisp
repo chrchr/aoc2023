@@ -2,7 +2,8 @@
   (:use :cl
    :fiveam)
   (:import-from :aoc2023 #:calibration-value
-                #:evaluate-calibration-document))
+                #:evaluate-calibration-document
+                #:sum-of-ids-of-valid-games))
 
 (in-package aoc2023/test)
 

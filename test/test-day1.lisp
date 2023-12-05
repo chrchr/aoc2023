@@ -14,7 +14,6 @@
 (test calibration-value-spelled-out-zero
   (is (= (calibration-value "two1ninezero") 29)))
 
-
 (test evaluate-calibration-document
   (is
    (= (evaluate-calibration-document "test-calibration-document.txt")
