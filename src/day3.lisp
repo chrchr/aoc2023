@@ -33,16 +33,16 @@
 
 (defun symbol-char-p (character)
   ;; Not really clear in the spec what a symbol is. It's not a number or a '.'!
-  (and (characterp character)
-       (char/= character #\.)
+  (and (char/= character #\.)
+       (char/= character #\Nul)
        (not (digit-char-p character))
        (char/= character #\Newline)))
 
 (defun read-dots (stream line)
-  (loop for c = (peek-char nil stream nil :eof) until (char/= c #\.) do
+  (loop for c = (peek-char nil stream nil #\Nul) until (char/= c #\.) do
     (vector-push-extend (read-char stream) line)))
 
-(defun allocate-empty-string (&optional (initial-capacity 128))
+(defun allocate-empty-string (&optional (initial-capacity 2048))
   (make-array initial-capacity :adjustable t :fill-pointer 0 :element-type 'character))
 
 (defun symbol-above-p (previous-line start end)
@@ -52,7 +52,7 @@
   (digit-char-p (char previous-line offset)))
 
 (defun take-number-near (line offset)
-  (if (digit-char-p (char line offset))
+  (if (and (not (zerop (length line))) (digit-char-p (char line offset)))
       (let ((not-digit-char-p (lambda (c) (not (digit-char-p c)))))
         (take-number
          line 
@@ -69,7 +69,7 @@
 
 (defun read-part-number (stream line previous-line)
   (let ((beginning-of-number-offset (length line)))
-    (loop for c = (peek-char nil stream nil :eof)
+    (loop for c = (peek-char nil stream nil #\Nul)
           while (digit-char-p c)
           do (vector-push-extend (read-char stream) line))
     (if (or
@@ -79,32 +79,30 @@
          ;; There's a symbol on the previous line
          (and (not (zerop (length previous-line))) (symbol-above-p previous-line beginning-of-number-offset (length line)))
          ;; The next character is a symbol
-         (symbol-char-p (peek-char nil stream nil :eof)))
+         (symbol-char-p (peek-char nil stream nil #\Nul)))
         (take-number line beginning-of-number-offset (length line))
         0)))
 
 (defun read-symbol (stream line previous-line)
-    (+
-     (take-number-near previous-line (1- (length line)))
-     (loop for c = (peek-char nil stream nil :eof)
-           while (symbol-char-p c)
-           sum
-           (prog1
-               (take-number-near previous-line (1- (length line)))
-               (vector-push-extend (read-char stream) line)))
-
+  (+
+   (if (not (zerop (length line)))
+       (take-number-near previous-line (1- (length line)))
+       0)
+   (loop for c = (peek-char nil stream nil #\Nul)
+         while (symbol-char-p c)
+         sum
+         (prog1
+             (take-number-near previous-line (length line))
+           (vector-push-extend (read-char stream) line)))
      (if (< (length line) (length previous-line))
          (take-number-near previous-line (length line))
          0)))
 
-(defun sum-of-part-numbers (filename)
-  ;; we need at most three lines at a time.
-  ;; if we see a symbol, check if the next character, or the three characters above it, are numbers.
-  ;; if we see a number, check lf the next character, or the three characters above it, are symbols.
+(defun sum-of-part-numbers-stream (stream)
   (let ((previous-line (allocate-empty-string))
         (line (allocate-empty-string))
         (sum-of-part-numbers 0))
-    (with-open-file (stream filename :direction :input)
+
       (loop for c = (peek-char nil stream nil :eof) do
         (cond ((eq c :eof)
                (return sum-of-part-numbers))
@@ -119,4 +117,8 @@
               ((symbol-char-p c)
                (incf sum-of-part-numbers (read-symbol stream line previous-line)))
               ((digit-char-p c)
-               (incf sum-of-part-numbers (read-part-number stream line previous-line))))))))
+               (incf sum-of-part-numbers (read-part-number stream line previous-line)))))))
+  
+(defun sum-of-part-numbers (filename)
+  (with-open-file (stream filename :direction :input :external-format :utf8)
+    (sum-of-part-numbers-stream stream)))
