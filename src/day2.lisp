@@ -61,9 +61,6 @@
       (end-of-file nil))
     chunk))
 
-(defun eof-p (stream)
-  (eq 'eof (peek-char nil stream nil 'eof)))
-
 (defun read-integer (stream)
   (let ((number (read-while stream #'digit-char-p)))
     (when (not (zerop (length number)))
@@ -90,11 +87,13 @@
         (read-integer stream)
       (read-expected-string ":" stream))))
 
+(defparameter +cube-terminals+ #(#\, #\; #\Newline))
+
 (defun read-cube (stream)
   (read-expected-string " " stream)
   (values (read-integer stream)
           (progn (read-expected-string " " stream)
-                 (read-word stream (format nil ",;~%")))))
+                 (read-word stream +cube-terminals+))))
 
 (defun validate-game (red-cubes green-cubes blue-cubes stream)
   (let ((game-id (find-game stream)))
@@ -121,10 +120,10 @@
 
 (defun sum-of-ids-of-valid-games (red-cubes green-cubes blue-cubes filename)
   (with-open-file (input-stream filename :direction :input :external-format :utf-8)
-    (loop until (eof-p input-stream)
+    (loop until (eof:eof-p input-stream)
       sum (validate-game red-cubes green-cubes blue-cubes input-stream))))
 
 (defun sum-of-minimum-cube-sets (filename)
   (with-open-file (input-stream filename :direction :input :external-format :utf-8)
-    (loop until (eof-p input-stream)
+    (loop until (eof:eof-p input-stream)
       sum (minimum-cube-sets input-stream))))
