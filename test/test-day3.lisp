@@ -5,9 +5,13 @@
 (defun do-string (str)
   (aoc2023::sum-of-part-numbers-stream (make-string-input-stream str)))
 
+;; (test sum-of-part-numbers
+;;   (is
+;;    (= (aoc2023:sum-of-part-numbers "day3-sample-schematic.txt") 4361)))
+
 (test sum-of-part-numbers
   (is
-   (= (aoc2023:sum-of-part-numbers "day3-sample-schematic.txt") 4361)))
+   (= (aoc2023:sum-of-part-numbers "day3-sample-schematic.txt") 467835)))
 
 (test numbers-left
   (is
@@ -45,4 +49,16 @@
 (test multiply-symbols
   (is
    (= (do-string (format nil "*1*~%***")) 1)))
+
+(test horizontal-gear-ratio
+  (is
+   (= (do-string ".2*8.") 16)))
+
+(test vertical-gear-ratio
+  (is
+   (= (do-string (format nil "2..~%.*.~%.8.")) 16)))
+
+(test not-a-gear-ratio
+  (is
+   (= (do-string (format nil "2.3~%.*.~%..8")) 13)))
 
