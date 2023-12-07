@@ -4,7 +4,8 @@
   (:import-from :aoc2023 #:calibration-value
                 #:evaluate-calibration-document
                 #:sum-of-ids-of-valid-games
-                #:sum-of-part-numbers))
+                #:sum-of-part-numbers
+                #:card-values))
 
 (in-package aoc2023/test)
 
