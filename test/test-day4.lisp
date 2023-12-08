@@ -2,9 +2,14 @@
 
 (def-suite* day4 :in aoc2023/test)
 
+;; (test card-values
+;;   (is
+;;    (= 13 (card-values "day4-sample-cards.txt"))))
+
 (test card-values
   (is
-   (= 13 (card-values "day4-sample-cards.txt"))))
+   (= 30 (card-values "day4-sample-cards.txt"))))
+
 
 (test they-use-different-numbers-of-cards
   (is
